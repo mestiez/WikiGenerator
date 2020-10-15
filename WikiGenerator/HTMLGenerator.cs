@@ -213,7 +213,7 @@ namespace WikiGenerator
 
         private string GetLink(Node target)
         {
-            return "/" + Path.GetRelativePath(RootNode.ResultFilePath, target.ResultFilePath).Replace("\\", "/");
+            return "./" + Path.GetRelativePath(RootNode.ResultFilePath, target.ResultFilePath).Replace("\\", "/");
         }
 
         private PageMetadata GetPageMetadataFromNode(Node node)
