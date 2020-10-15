@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "WikiGenerator": {
+      "commandName": "Project",
+      "commandLineArgs": "testWiki testOut"
+    }
+  }
+}
