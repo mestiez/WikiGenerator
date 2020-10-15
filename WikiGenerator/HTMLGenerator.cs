@@ -169,13 +169,10 @@ namespace WikiGenerator
                 return false;
 
             int startIndex = source.IndexOf(MetaDataTag);
-            int endIndex = source.IndexOf("/" + MetaDataTag);
+            int endIndex = source.IndexOf("/" + MetaDataTag, startIndex + MetaDataTag.Length);
 
-            if (startIndex == -1)
+            if (startIndex != 0 || endIndex <= startIndex)
                 return false;
-
-            if (startIndex != 0)
-                throw new Exception("Page metadata does not start at the top of the file");
 
             eatenCharCount = endIndex + MetaDataTag.Length + 1;
 
@@ -191,8 +188,7 @@ namespace WikiGenerator
             PageMetadata meta = new PageMetadata();
 
             var fields = typeof(PageMetadata).GetFields();
-
-            foreach (var line in metadataString.Split(Environment.NewLine))
+            foreach (string line in metadataString.Split(new[] { "\n", Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
             {
                 if (string.IsNullOrWhiteSpace(line)) continue;
 
@@ -204,6 +200,7 @@ namespace WikiGenerator
                     if (item.Name.ToLower() == fieldName)
                     {
                         item.SetValue(meta, Convert.ChangeType(value, item.FieldType));
+                        Console.WriteLine($"Wrote page metadata value {fieldName} > {value}");
                     }
                 }
             }
