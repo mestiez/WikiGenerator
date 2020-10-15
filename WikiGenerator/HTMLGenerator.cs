@@ -133,7 +133,7 @@ namespace WikiGenerator
             var metaData = pageMetadataDict[node];
             string source = node.MarkdownContent;
 
-            if (!string.IsNullOrWhiteSpace(metaData.Title))
+            if (!string.IsNullOrWhiteSpace(metaData.Title) && metaData.AddHeader)
                 source = $"# {metaData.Title}\n" + source;
 
             string page = Inject("page");

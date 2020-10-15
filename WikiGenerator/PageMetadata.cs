@@ -5,5 +5,6 @@
         public string Title;
         public int Order = 0;
         public string Description = null;
+        public bool AddHeader = true;
     }
 }
