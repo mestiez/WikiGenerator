@@ -33,10 +33,11 @@ title Title goes here
 order 0
 description Some description
 addHeader true
+search this is where search keywords go
 
 /metadata
 ```
-The `title` field is necessary, the rest is optional. The `title` field will create a header on every page and tells the generator what to display this file as. The `order` field determines the order of this article in any list it is generated in. The `addHeader` field decides if the generator adds the title to the page.
+The `title` field is necessary, the rest is optional. The `title` field will create a header on every page and tells the generator what to display this file as. The `order` field determines the order of this article in any list it is generated in. The `addHeader` field decides if the generator adds the title to the page. The `search` field stores keywords that are looked for by the search function. This is optional.
 
 The `description` field is currently only used for category metadata which will be described next.
 

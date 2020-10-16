@@ -1,10 +1,12 @@
 ﻿<html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
+    <base href="/wikigen/" />
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/styles/vs2015.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/highlight.min.js"></script>
-    <base href="https://studiominus.nl/wikigen/" />
+    <script src="./searchIndex.js"></script>
     <script>
         hljs.initHighlightingOnLoad();
     </script>
@@ -14,6 +16,7 @@
         html,
         body {
             font-family: 'Inter', sans-serif;
+            margin: 5px;
         }
 
         .content {
@@ -21,10 +24,13 @@
             margin-left: auto;
             margin-right: auto;
             display: grid;
-            grid-template-columns: 250px auto;
-            grid-template-rows: 18px 100%;
-            grid-gap: 12px;
-            grid-template-areas: "sidebar breadcrumbs""sidebar page"
+            grid-template-columns: 250px 1fr 160px;
+            grid-template-rows: 24px auto;
+            justify-items: stretch;
+            align-items: start;
+            grid-gap: 6px;
+            grid-template-areas: "sidebar breadcrumbs search""sidebar page page";
+            height: 100%;
         }
 
         .sidebar {
@@ -33,35 +39,58 @@
             font-size: 100%;
             grid-area: sidebar;
             margin-right: 8px;
+            align-self: stretch;
         }
 
-        .sidebar * {
+        .sidebar-links{
+            display: block;
+            overflow-x: hidden;
+            margin-top: 10px;
+        }
+
+        .sidebar-links * {
             display: block;
             margin: 0;
             margin-bottom: 10px;
         }
 
-        .sidebar a {
+        .sidebar-links a {
             color: rgb(35, 35, 245);
             text-decoration: none;
         }
 
-        .sidebar a:hover {
+        .sidebar-links a:hover {
             text-decoration: underline;
         }
 
-        .sidebar>.title {
+        .sidebar > .title {
             font-weight: bold;
             font-size: 125%;
         }
 
-        .sidebar span{
+        .sidebar-links span {
             display: block;
+        }
+
+        .sidebar-links > span span {
             padding-left: 10px;
+            border-left: 1px solid rgb(200,200,200);
         }
 
         .page {
             grid-area: page;
+        }
+        
+        .search{
+            grid-area: search;
+        }
+
+        .search > input{
+            width: 100%;
+            font-family: inherit;
+            border: 1px solid gray;
+            outline: none;
+            padding: 3px;
         }
 
         .breadcrumbs {
@@ -76,6 +105,15 @@
         .breadcrumbs>*:not(:first-child)::before {
             content: "> ";
         }
+
+        .search-results {
+            display: none;
+        }
+
+        .search-results > a{
+            display: block;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 
@@ -83,16 +121,79 @@
     <div class="content">
         <div class="sidebar">
             <span class="title">#TITLE</span>
-
-            #SIDEBAR_LINKS
+            <div class="sidebar-links">
+                #SIDEBAR_LINKS
+            </div>
         </div>
         <div class="breadcrumbs">
             #BREADCRUMBS
         </div>
-        <div class="page">
+        <div class="search">
+            <input id="search-bar" type="text" placeholder="Search..." />
+        </div>
+        <div class="page" id="markdown-result">
             #MARKDOWN_RESULT
         </div>
+        <div class="search-results page" id="search-results">
+            ooh results and stuff!
+        </div>
     </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+
+        const searchResults = document.getElementById("search-results");
+        const markdownPage = document.getElementById("markdown-result");
+        const searchBar = document.getElementById("search-bar");
+        searchBar.addEventListener("keypress", (e) => {
+            if (e.key == "Enter") {
+                const k = encodeURIComponent(searchBar.value);
+                const url = new URL(window.location);
+                url.searchParams.set("search", k);
+                window.location = url;
+            }
+        });
+
+        if (urlParams.has("search")) {
+            const k = decodeURIComponent(urlParams.get("search"));
+            const r = search(k);
+            searchBar.value = k;
+            generateSearchPage(k, r);
+        }
+
+        function search(phrase) {
+            const results = [];
+
+            phrase = phrase.normalize().toLowerCase();
+            phrase = phrase.replace(/\s+/g, "");
+
+            for (var i of searchIndex) {
+                if (i.Keywords?.includes(phrase))
+                    results.push(i);
+            }
+
+            return results
+        }
+
+        function generateSearchPage(phrase, results) {
+
+            if (results.length == 0) {
+                searchResults.innerHTML = `<h4 style="opacity: 0.5">There are no pages that contain <i>"${phrase}"</i></h4>`;
+            } else {
+                searchResults.innerHTML = `<h4>These pages contain <i>"${phrase}"</i></h4>`;
+
+                for (var result of results) {
+                    const child = document.createElement("a");
+                    child.href = result.NodeResultPath;
+                    child.innerHTML = result.Title;
+                    searchResults.appendChild(child);
+                }
+            }
+
+            markdownPage.style.display = "none";
+            searchResults.style.display = "block";
+        }
+    </script>
 </body>
 
 </html>

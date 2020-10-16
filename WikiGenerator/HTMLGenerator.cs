@@ -12,6 +12,7 @@ namespace WikiGenerator
         public readonly WikiMetadata WikiMetadata;
         public readonly Node RootNode;
 
+        private readonly KeywordIndex keywordIndex = new KeywordIndex();
         private Dictionary<Node, PageMetadata> pageMetadataDict = new Dictionary<Node, PageMetadata>();
         private string sideBarLinksHTML;
 
@@ -26,9 +27,17 @@ namespace WikiGenerator
             pageMetadataDict.Clear();
             BuildPageMetaDataDictionary();
 
-            sideBarLinksHTML = GenerateSidebarLinks();
+            WriteSearchIndexFile();
 
+            sideBarLinksHTML = GenerateSidebarLinks();
             GenerateNode(RootNode);
+        }
+
+        private void WriteSearchIndexFile()
+        {
+            keywordIndex.Generate(pageMetadataDict, RootNode);
+            string json = JsonConvert.SerializeObject(keywordIndex.Index, Formatting.Indented);
+            File.WriteAllText(Path.Combine(RootNode.ResultFilePath, WikiConstants.SearchIndexJSPath), "const searchIndex = " + json);
         }
 
         private string GenerateSidebarLinks()
@@ -39,7 +48,7 @@ namespace WikiGenerator
             {
                 var meta = GetPageMetadataFromNode(node);
 
-                string link = node == RootNode ? "<span>" : $"<a href=\"{GetLink(node)}\">{meta.Title}</a><span>";
+                string link = node == RootNode ? "<span>" : $"<a href=\"{Utils.GetLink(node, RootNode)}\">{meta.Title}</a><span>";
                 int maxLinks = node == RootNode ? node.ChildDict.Count : WikiMetadata.MaxSidebarEntries;
 
                 foreach (var pair in node.ChildDict.OrderBy(a => pageMetadataDict[a.Value].Order).Take(maxLinks))
@@ -120,7 +129,7 @@ namespace WikiGenerator
             {
                 var child = pair.Value;
                 var itemMeta = GetPageMetadataFromNode(child);
-                categoryMarkdown += $" - [{itemMeta.Title}]({GetLink(child)})\n\n";
+                categoryMarkdown += $" - [{itemMeta.Title}]({Utils.GetLink(child, RootNode)})\n\n";
             }
 
             node.MarkdownContent = categoryMarkdown;
@@ -146,7 +155,7 @@ namespace WikiGenerator
                 Node item = pathToRoot[i];
                 if (item == RootNode) continue;
                 var itemMeta = GetPageMetadataFromNode(item);
-                breadCrumbHTML += $"<a href=\"{GetLink(item)}\">{itemMeta.Title}</a>\n";
+                breadCrumbHTML += $"<a href=\"{Utils.GetLink(item, RootNode)}\">{itemMeta.Title}</a>\n";
             }
 
             page = page.Replace(WikiConstants.MarkdownResultKey, markdownResult);
@@ -206,11 +215,6 @@ namespace WikiGenerator
             }
 
             return meta;
-        }
-
-        private string GetLink(Node target)
-        {
-            return "./" + Path.GetRelativePath(RootNode.ResultFilePath, target.ResultFilePath).Replace("\\", "/");
         }
 
         private PageMetadata GetPageMetadataFromNode(Node node)

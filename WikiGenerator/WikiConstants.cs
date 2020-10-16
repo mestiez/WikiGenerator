@@ -6,6 +6,7 @@
         public const string CategoryMetadataPath = "meta.json";
 
         public const string InjectPath = "inject";
+        public const string SearchIndexJSPath = "searchIndex.js";
 
         public const string MarkdownResultKey = "#MARKDOWN_RESULT";
         public const string TitleKey = "#TITLE";

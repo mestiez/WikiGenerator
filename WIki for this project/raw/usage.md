@@ -27,6 +27,17 @@ The default folder structure looks like this:
 ```
 `build.bat` will run `WikiGenerator raw build`. which builds the contents in `raw` to `build`. That should have been really obvious. 
 
+## Writing articles
+
+### Pages
+
+Any Markdown file in the input folder will generate an HTML file. All pages should start with a metadata block as described in [Metadata](./advancedUsage/metadata.html).
+Aside from Markdown, you can also just write (and mix) plain HTML in the document.
+
+### Categories
+
+Any folder will turn into a category. Nested categories are supported. A category can also contain metadata, see [Metadata](./advancedUsage/metadata.html).
+
 ## Building and serving the wiki
 
 Building the wiki is as simple as running the batch file. You can also call `WikiGenrator raw build` manually.
