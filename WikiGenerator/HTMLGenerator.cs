@@ -11,7 +11,7 @@ namespace WikiGenerator
     {
         public readonly WikiMetadata WikiMetadata;
         public readonly Node RootNode;
-
+        private readonly MarkdownPipeline pipeline;
         private readonly KeywordIndex keywordIndex = new KeywordIndex();
         private Dictionary<Node, PageMetadata> pageMetadataDict = new Dictionary<Node, PageMetadata>();
         private string sideBarLinksHTML;
@@ -20,6 +20,10 @@ namespace WikiGenerator
         {
             WikiMetadata = wikiMetadata;
             RootNode = rootNode;
+
+            pipeline = new MarkdownPipelineBuilder().
+                UseAutoIdentifiers().
+                Build();
         }
 
         public void GenerateWiki()
@@ -91,7 +95,7 @@ namespace WikiGenerator
 
         private void GenerateNode(Node node)
         {
-            Console.WriteLine("Requested generation of " + node.Name);
+            //Console.WriteLine("Requested generation of " + node.Name);
 
             if (node != RootNode)
             {
@@ -108,7 +112,7 @@ namespace WikiGenerator
                 }
 
                 File.WriteAllText(node.ResultFilePath, html);
-                Console.WriteLine("Wrote " + node.ResultFilePath);
+                //Console.WriteLine("Wrote " + node.ResultFilePath);
             }
 
             foreach (var item in node.ChildDict)
@@ -146,7 +150,7 @@ namespace WikiGenerator
                 source = $"# {metaData.Title}\n" + source;
 
             string page = Inject("page");
-            string markdownResult = Markdown.ToHtml(source);
+            string markdownResult = Markdown.ToHtml(source, pipeline);
 
             string breadCrumbHTML = "";
             List<Node> pathToRoot = node.GetPathToRoot();
@@ -209,7 +213,7 @@ namespace WikiGenerator
                     if (item.Name.ToLower() == fieldName)
                     {
                         item.SetValue(meta, Convert.ChangeType(value, item.FieldType));
-                        Console.WriteLine($"Wrote page metadata value {fieldName} > {value}");
+                        //Console.WriteLine($"Wrote page metadata value {fieldName} > {value}");
                     }
                 }
             }

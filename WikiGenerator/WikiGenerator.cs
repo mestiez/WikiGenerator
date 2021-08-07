@@ -41,6 +41,7 @@ namespace WikiGenerator
 
             var generator = new WikiStructureGenerator(inputFolder, outputFolder);
             generator.Generate();
+            Console.WriteLine("Done.");
         }
     }
 }

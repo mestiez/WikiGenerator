@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace WikiGenerator
@@ -45,8 +46,11 @@ namespace WikiGenerator
                 }
             }
 
-            var markDownFiles = Directory.EnumerateFiles(inputPath, "*.md", SearchOption.AllDirectories);
+            var markDownFiles = Directory.EnumerateFiles(inputPath, "*.md", SearchOption.AllDirectories).ToArray();
 
+            bool largeWiki = markDownFiles.Length > 50;
+            float processed = 0;
+            int step = markDownFiles.Length / 10;
             foreach (var file in markDownFiles)
             {
                 string path = Path.GetRelativePath(inputPath, file.Replace("/", "\\"));
@@ -61,8 +65,15 @@ namespace WikiGenerator
                 var node = RootNode.GetOrCreateAtPath(breadcrumbs);
                 node.ResultFilePath = outPath;
                 node.FileContents = File.ReadAllText(file);
+                processed++;
 
-                Console.WriteLine("Found " + node.SourceFilePath);
+                if (largeWiki)
+                {
+                    if ((int)processed % step == 0)
+                        Console.WriteLine("Found {0}% of the files", (int)MathF.Round(processed / markDownFiles.Length * 100));
+                }
+                else
+                    Console.WriteLine("Found " + node.SourceFilePath);
             }
 
             htmlGenerator.GenerateWiki();
