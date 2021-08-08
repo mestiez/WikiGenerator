@@ -23,6 +23,8 @@ namespace WikiGenerator
 
             pipeline = new MarkdownPipelineBuilder().
                 UseAutoIdentifiers().
+                UseFigures().
+                UseAutoLinks().
                 Build();
         }
 
@@ -111,7 +113,7 @@ namespace WikiGenerator
                     node.ResultFilePath = Path.ChangeExtension(node.ResultFilePath, "html");
                 }
 
-                File.WriteAllText(node.ResultFilePath, html);
+                File.WriteAllText(node.ResultFilePath, html, System.Text.Encoding.UTF8);
                 //Console.WriteLine("Wrote " + node.ResultFilePath);
             }
 

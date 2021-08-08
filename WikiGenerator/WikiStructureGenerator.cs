@@ -42,7 +42,7 @@ namespace WikiGenerator
                 else
                 {
                     var target = Path.Combine(outputPath, item);
-                    File.Copy(item, target);
+                    File.Copy(path, target);
                 }
             }
 
@@ -64,7 +64,7 @@ namespace WikiGenerator
 
                 var node = RootNode.GetOrCreateAtPath(breadcrumbs);
                 node.ResultFilePath = outPath;
-                node.FileContents = File.ReadAllText(file);
+                node.FileContents = File.ReadAllText(file, Encoding.UTF8);
                 processed++;
 
                 if (largeWiki)
