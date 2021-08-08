@@ -42,7 +42,7 @@ namespace WikiGenerator
                 else
                 {
                     var target = Path.Combine(outputPath, item);
-                    File.Copy(path, target);
+                    File.Copy(path, target, true);
                 }
             }
 
