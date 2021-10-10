@@ -28,7 +28,7 @@ namespace WikiGenerator
                         MaxSidebarEntries = 25,
                         Mirror = new[] { "media" }
                     }, Formatting.Indented));
-                    File.WriteAllText("raw\\index.md", "metadata\ntitle Home\n/metadata\n\nThese are the contents of index.md. Add more files / folders to create a wiki.");
+                    File.WriteAllText("raw\\index.md", "metadata\ntitle Home\n/metadata\n\nThese are the contents of index.md. Add more files / folders to create a wiki.", System.Text.Encoding.UTF8);
                     return;
                 }
 

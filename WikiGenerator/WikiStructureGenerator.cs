@@ -83,7 +83,7 @@ namespace WikiGenerator
 
         private WikiMetadata LoadMetadata()
         {
-            var wikiDataJson = File.ReadAllText(Path.Combine(inputPath, WikiConstants.WikiJsonPath));
+            var wikiDataJson = File.ReadAllText(Path.Combine(inputPath, WikiConstants.WikiJsonPath), System.Text.Encoding.UTF8);
             var wikiData = JsonConvert.DeserializeObject<WikiMetadata>(wikiDataJson);
             return wikiData;
         }

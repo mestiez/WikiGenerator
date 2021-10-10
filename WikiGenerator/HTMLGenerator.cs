@@ -43,7 +43,7 @@ namespace WikiGenerator
         {
             keywordIndex.Generate(pageMetadataDict, RootNode);
             string json = JsonConvert.SerializeObject(keywordIndex.Index, Formatting.Indented);
-            File.WriteAllText(Path.Combine(RootNode.ResultFilePath, WikiConstants.SearchIndexJSPath), "const searchIndex = " + json);
+            File.WriteAllText(Path.Combine(RootNode.ResultFilePath, WikiConstants.SearchIndexJSPath), "const searchIndex = " + json, System.Text.Encoding.UTF8);
         }
 
         private string GenerateSidebarLinks()
@@ -81,7 +81,7 @@ namespace WikiGenerator
                     var metaDataFile = Path.Combine(dir, node.Name, WikiConstants.CategoryMetadataPath);
                     if (File.Exists(metaDataFile))
                     {
-                        string json = File.ReadAllText(metaDataFile);
+                        string json = File.ReadAllText(metaDataFile, System.Text.Encoding.UTF8);
                         pageMetadataDict.Add(node, JsonConvert.DeserializeObject<PageMetadata>(json));
                     }
                     else
@@ -230,7 +230,7 @@ namespace WikiGenerator
 
         private string Inject(string name)
         {
-            return File.ReadAllText($"{WikiConstants.InjectPath}\\{name}.html");
+            return File.ReadAllText($"{WikiConstants.InjectPath}\\{name}.html", System.Text.Encoding.UTF8);
         }
     }
 }
