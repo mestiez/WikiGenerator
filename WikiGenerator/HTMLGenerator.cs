@@ -53,6 +53,8 @@ namespace WikiGenerator
             string getNodeLink(Node node)
             {
                 var meta = GetPageMetadataFromNode(node);
+                if (meta.Hidden)
+                    return string.Empty;
 
                 string link = node == RootNode ? "<span>" : $"<a href=\"{Utils.GetLink(node, RootNode)}\">{meta.Title}</a><span>";
                 int maxLinks = node == RootNode ? node.ChildDict.Count : WikiMetadata.MaxSidebarEntries;
@@ -97,16 +99,12 @@ namespace WikiGenerator
 
         private void GenerateNode(Node node)
         {
-            //Console.WriteLine("Requested generation of " + node.Name);
-
             if (node != RootNode)
             {
                 string html;
 
                 if (!node.IsCategory)
-                {
                     html = GeneratePage(node);
-                }
                 else
                 {
                     html = GenerateCategoryPage(node);
@@ -114,7 +112,6 @@ namespace WikiGenerator
                 }
 
                 File.WriteAllText(node.ResultFilePath, html, System.Text.Encoding.UTF8);
-                //Console.WriteLine("Wrote " + node.ResultFilePath);
             }
 
             foreach (var item in node.ChildDict)
@@ -200,7 +197,7 @@ namespace WikiGenerator
         private static PageMetadata ParseMetadata(string metadataString)
         {
             const string delimiter = " ";
-            PageMetadata meta = new PageMetadata();
+            var meta = new PageMetadata();
 
             var fields = typeof(PageMetadata).GetFields();
             foreach (string line in metadataString.Split(new[] { "\n", Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))

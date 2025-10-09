@@ -6,7 +6,7 @@ namespace WikiGenerator
     {
         public static void CopyDirectory(string src, string dest)
         {
-            DirectoryInfo info = new DirectoryInfo(src);
+            var info = new DirectoryInfo(src);
 
             Directory.CreateDirectory(dest);
 
@@ -16,7 +16,7 @@ namespace WikiGenerator
                 var source = Path.Combine(src, relativePath);
                 var target = Path.Combine(dest, relativePath);
 
-                FileInfo targetInfo = new FileInfo(target);
+                var targetInfo = new FileInfo(target);
 
                 if (!Directory.Exists(targetInfo.Directory.FullName))
                     targetInfo.Directory.Create();
@@ -27,7 +27,7 @@ namespace WikiGenerator
 
         public static string GetLink(Node target, Node rootNode)
         {
-            return "./" + Path.GetRelativePath(rootNode.ResultFilePath, target.ResultFilePath).Replace("\\", "/");
+            return "/" + Path.GetRelativePath(rootNode.ResultFilePath, target.ResultFilePath).Replace("\\", "/");
         }
     }
 }

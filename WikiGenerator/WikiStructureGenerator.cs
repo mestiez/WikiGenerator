@@ -46,7 +46,7 @@ namespace WikiGenerator
                 }
             }
 
-            var markDownFiles = Directory.EnumerateFiles(inputPath, "*.md", SearchOption.AllDirectories).ToArray();
+            var markDownFiles = Directory.GetFiles(inputPath, "*.md", SearchOption.AllDirectories);
 
             bool largeWiki = markDownFiles.Length > 50;
             float processed = 0;
